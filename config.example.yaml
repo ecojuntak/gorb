@@ -1,0 +1,11 @@
+APP_NAME: GO-REST
+PORT: 8000
+HOST: localhost
+
+DB_DRIVER: postgres
+DB_HOST: 127.0.0.1
+DB_PORT: 5342
+DB_NAME: gorest
+DB_USERNAME: postgres
+DB_PASSWORD: 
+DB_POSTGRES_SSL_MODE: disable
