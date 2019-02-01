@@ -19,10 +19,7 @@ import (
 )
 
 func TestUsers(t *testing.T) {
-	var uu []models.User
-	err := faker.FakeData(&uu)
-	assert.NoError(t, err)
-
+	uu := make([]models.User, 1)
 	mockUserRepo := new(mocks.UserRepository)
 	mockUserRepo.On("Users").Return(uu, nil)
 
