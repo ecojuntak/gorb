@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bxcodec/faker"
 	"github.com/ecojuntak/gorb/controllers"
 	"github.com/ecojuntak/gorb/models"
 	"github.com/ecojuntak/gorb/repositories/mocks"
@@ -38,9 +37,13 @@ func TestUsers(t *testing.T) {
 }
 
 func TestUser(t *testing.T) {
-	var u models.User
-	err := faker.FakeData(&u)
-	assert.NoError(t, err)
+	u := models.User{
+		ID:        0,
+		Name:      "eco",
+		Email:     "eco@example.com",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 
 	id := int(u.ID)
 
@@ -95,9 +98,13 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	var u models.User
-	err := faker.FakeData(&u)
-	assert.NoError(t, err)
+	u := models.User{
+		ID:        1,
+		Name:      "eco",
+		Email:     "eco@example.com",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 
 	id := int(u.ID)
 
@@ -123,9 +130,13 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDetele(t *testing.T) {
-	var u models.User
-	err := faker.FakeData(&u)
-	assert.NoError(t, err)
+	u := models.User{
+		ID:        1,
+		Name:      "eco",
+		Email:     "eco@example.com",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 
 	id := int(u.ID)
 
