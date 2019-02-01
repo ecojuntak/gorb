@@ -1,0 +1,10 @@
+language: go
+
+go:
+  - 1.11
+
+before_script:
+  - cp config.example.yaml config.yaml
+
+script:
+  - go test -v -race ./...
