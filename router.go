@@ -13,10 +13,10 @@ func LoadRouter(db *sql.DB) (r *mux.Router) {
 	userController := controllers.NewUserController(userRepo)
 
 	r = mux.NewRouter()
-	r.HandleFunc("/users", userController.GetAllUsers).Methods("GET")
-	r.HandleFunc("/users", userController.CreateUser).Methods("POST")
-	r.HandleFunc("/users/{id}", userController.GetById).Methods("GET")
-	r.HandleFunc("/users/{id}", userController.UpdateUser).Methods("PATCH")
+	r.HandleFunc("/users", userController.Users).Methods("GET")
+	r.HandleFunc("/users", userController.Create).Methods("POST")
+	r.HandleFunc("/users/{id}", userController.User).Methods("GET")
+	r.HandleFunc("/users/{id}", userController.Update).Methods("PATCH")
 	r.HandleFunc("/users/{id}", userController.Delete).Methods("DELETE")
 
 	return

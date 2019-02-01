@@ -38,7 +38,7 @@ func modifyResponse(user models.User) map[string]interface{} {
 	return u
 }
 
-func (c *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+func (c *UserController) Users(w http.ResponseWriter, r *http.Request) {
 	users, err := c.repo.Users()
 
 	if err != nil {
@@ -54,10 +54,10 @@ func (c *UserController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, uu)
 }
 
-func (c *UserController) GetById(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+func (c *UserController) User(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
 
-	id, _ := strconv.Atoi(vars["id"])
+	id, _ := strconv.Atoi(params["id"])
 	user, err := c.repo.User(id)
 
 	if err != nil {
@@ -69,7 +69,7 @@ func (c *UserController) GetById(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, u)
 }
 
-func (c *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (c *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 
 	u := models.User{
@@ -86,10 +86,10 @@ func (c *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 	}
 
-	respondWithJSON(w, http.StatusOK, user)
+	respondWithJSON(w, http.StatusCreated, user)
 }
 
-func (c *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (c *UserController) Update(w http.ResponseWriter, r *http.Request) {
 	u := models.User{
 		Name:      r.FormValue("name"),
 		Email:     r.FormValue("email"),
