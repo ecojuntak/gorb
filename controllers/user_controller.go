@@ -29,12 +29,6 @@ func modifyResponse(user models.User) map[string]interface{} {
 	u["created_at"] = user.CreatedAt
 	u["updated_at"] = user.UpdatedAt
 
-	if user.DeletedAt.String == "" {
-		u["deleted_at"] = nil
-	} else {
-		u["deleted_ar"] = user.DeletedAt.String
-	}
-
 	return u
 }
 

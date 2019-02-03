@@ -27,8 +27,8 @@ func TestGetById(t *testing.T) {
 		UpdatedAt: now,
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "name", "email", "updated_at", "created_at", "deleted_at"}).
-		AddRow(1, "eco", "eco@example.com", now, now, nil)
+	rows := sqlmock.NewRows([]string{"id", "name", "email", "updated_at", "created_at"}).
+		AddRow(1, "eco", "eco@example.com", now, now)
 
 	query := "select (.+) from users where (.+)"
 
@@ -49,8 +49,8 @@ func TestGetByAllUser(t *testing.T) {
 	}
 	defer db.Close()
 
-	rows := sqlmock.NewRows([]string{"id", "name", "email", "updated_at", "created_at", "deleted_at"}).
-		AddRow(1, "eco", "eco@example.com", time.Now(), time.Now(), nil)
+	rows := sqlmock.NewRows([]string{"id", "name", "email", "updated_at", "created_at"}).
+		AddRow(1, "eco", "eco@example.com", time.Now(), time.Now())
 
 	query := "select (.+) from users"
 
@@ -124,12 +124,12 @@ func TestDelete(t *testing.T) {
 	query := "delete from users where id=\\?"
 
 	prep := mock.ExpectPrepare(query)
-	prep.ExpectExec().WithArgs(12).WillReturnResult(sqlmock.NewResult(12, 1))
+	prep.ExpectExec().WithArgs(1).WillReturnResult(sqlmock.NewResult(1, 1))
 
 	ur := NewUserRepo(db)
 
-	id := int(12)
-	anArticleStatus, err := ur.Delete(id)
+	id := int(1)
+	status, err := ur.Delete(id)
 	assert.NoError(t, err)
-	assert.True(t, anArticleStatus)
+	assert.True(t, status)
 }

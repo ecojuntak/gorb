@@ -27,7 +27,7 @@ func (r *userRepo) User(id int) (models.User, error) {
 	var u models.User
 
 	err := r.DB.QueryRow("select * from users where id=?", id).
-		Scan(&u.ID, &u.Name, &u.Email, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
+		Scan(&u.ID, &u.Name, &u.Email, &u.CreatedAt, &u.UpdatedAt)
 
 	return u, err
 }
@@ -44,7 +44,7 @@ func (r *userRepo) Users() ([]models.User, error) {
 
 	for rows.Next() {
 		var u models.User
-		err := rows.Scan(&u.ID, &u.Name, &u.Email, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
+		err := rows.Scan(&u.ID, &u.Name, &u.Email, &u.CreatedAt, &u.UpdatedAt)
 
 		if err != nil {
 			log.Fatalln(err)
