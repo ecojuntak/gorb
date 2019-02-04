@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -37,6 +36,7 @@ func (c *UserController) Users(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	var uu []map[string]interface{}
@@ -56,6 +56,7 @@ func (c *UserController) User(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	u := modifyResponse(user)
@@ -78,6 +79,7 @@ func (c *UserController) Create(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	respondWithJSON(w, http.StatusCreated, user)
@@ -93,7 +95,6 @@ func (c *UserController) Update(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
-		log.Fatalln(err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -102,7 +103,6 @@ func (c *UserController) Update(w http.ResponseWriter, r *http.Request) {
 	user := modifyResponse(res)
 
 	if err != nil {
-		log.Fatalln(err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -114,7 +114,6 @@ func (c *UserController) Delete(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["id"])
 	if err != nil {
-		log.Fatalln(err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -122,7 +121,6 @@ func (c *UserController) Delete(w http.ResponseWriter, r *http.Request) {
 	ok, err := c.repo.Delete(id)
 
 	if err != nil {
-		log.Fatalln(err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

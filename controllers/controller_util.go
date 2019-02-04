@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 )
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
+	logrus.Errorln(message)
 	respondWithJSON(w, code, map[string]string{"error": message})
 }
 
@@ -18,6 +20,6 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	_, err := w.Write(response)
 
 	if err != nil {
-		log.Fatalln(err)
+		logrus.Errorln(err)
 	}
 }
