@@ -7,6 +7,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ecojuntak/gorb/middlewares"
+
+	"github.com/gorilla/handlers"
+
 	"github.com/ecojuntak/gorb/database"
 	"github.com/urfave/cli"
 
@@ -30,14 +34,11 @@ func loadConfig() (err error) {
 
 func runServer(db *sql.DB) {
 	r := LoadRouter(db)
-
-	server := &http.Server{
-		Handler: r,
-		Addr:    getAddress(),
-	}
+	corsOption := middlewares.CorsMiddleware()
 
 	log.Println("Server run on " + getAddress())
-	log.Fatal(server.ListenAndServe())
+
+	http.ListenAndServe(getAddress(), handlers.CORS(corsOption[0], corsOption[1], corsOption[2])(r))
 }
 
 func main() {

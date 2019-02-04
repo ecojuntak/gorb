@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/ecojuntak/gorb/controllers"
+	"github.com/ecojuntak/gorb/middlewares"
 	"github.com/ecojuntak/gorb/repositories"
 	"github.com/gorilla/mux"
 )
@@ -19,5 +20,6 @@ func LoadRouter(db *sql.DB) (r *mux.Router) {
 	r.HandleFunc("/users/{id}", userController.Update).Methods("PATCH")
 	r.HandleFunc("/users/{id}", userController.Delete).Methods("DELETE")
 
+	r.Use(middlewares.LoggerMidldlware)
 	return
 }
