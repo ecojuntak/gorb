@@ -27,6 +27,7 @@ func modifyResponse(user models.User) map[string]interface{} {
 	u["email"] = user.Email
 	u["created_at"] = user.CreatedAt
 	u["updated_at"] = user.UpdatedAt
+	u["deteled_at"] = user.DeletedAt
 
 	return u
 }

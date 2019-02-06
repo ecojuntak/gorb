@@ -1,10 +1,7 @@
 package middlewares
 
 import (
-	"net/http"
-
 	"github.com/gorilla/handlers"
-	"github.com/sirupsen/logrus"
 )
 
 func CorsMiddleware() []handlers.CORSOption {
@@ -18,12 +15,4 @@ func CorsMiddleware() []handlers.CORSOption {
 	cors = append(cors, allowedOrigins)
 
 	return cors
-}
-
-func LoggerMidldlware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logrus.Infoln(r.Method, r.RequestURI)
-
-		next.ServeHTTP(w, r)
-	})
 }
