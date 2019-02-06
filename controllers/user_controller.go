@@ -86,10 +86,12 @@ func (c *UserController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *UserController) Update(w http.ResponseWriter, r *http.Request) {
+	now := time.Now()
+
 	u := models.User{
 		Name:      r.FormValue("name"),
 		Email:     r.FormValue("email"),
-		UpdatedAt: time.Now(),
+		UpdatedAt: now,
 	}
 
 	params := mux.Vars(r)

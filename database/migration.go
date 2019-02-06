@@ -1,11 +1,13 @@
 package database
 
-func Migrate() (err error) {
-	// db, err := InitDatabase()
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
+import (
+	"github.com/ecojuntak/gorb/models"
 
-	// err = db.AutoMigrate(models.User{}).Error
-	return nil
+	"github.com/jinzhu/gorm"
+)
+
+func Migrate(db *gorm.DB) (err error) {
+	db.AutoMigrate(models.User{})
+
+	return
 }

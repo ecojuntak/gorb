@@ -1,16 +1,16 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
 )
 
-func InitDatabase() (db *sql.DB, err error) {
+func InitDatabase() (db *gorm.DB, err error) {
 	dbDriver := viper.GetString("DB_DRIVER")
 	var connectionString string
 
@@ -27,8 +27,8 @@ func InitDatabase() (db *sql.DB, err error) {
 	return
 }
 
-func openConnection(dbDriver, connection string) (db *sql.DB, err error) {
-	db, err = sql.Open(dbDriver, connection)
+func openConnection(dbDriver, connection string) (db *gorm.DB, err error) {
+	db, err = gorm.Open(dbDriver, connection)
 	if err != nil {
 		fmt.Println(err)
 	}

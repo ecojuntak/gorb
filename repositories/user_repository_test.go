@@ -1,17 +1,26 @@
 package repositories
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
-	"github.com/ecojuntak/gorb/models"
+	"github.com/jinzhu/gorm"
 
+	"github.com/ecojuntak/gorb/models"
 	"github.com/stretchr/testify/assert"
+
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/lib/pq"
+
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
 func TestGetById(t *testing.T) {
 	db, mock, err := sqlmock.New()
+	gormDB, _ := gorm.Open("postgres", db)
+
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -30,13 +39,12 @@ func TestGetById(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id", "name", "email", "updated_at", "created_at"}).
 		AddRow(1, "eco", "eco@example.com", now, now)
 
-	query := "select (.+) from users where (.+)"
+	query := "^SELECT (.+) FROM \"users\" WHERE (.+)$"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
-	ur := NewUserRepo(db)
+	ur := NewUserRepo(gormDB)
 
-	num := int(5)
-	user, err := ur.User(num)
+	user, err := ur.User(1)
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
 	assert.Equal(t, u, user)
@@ -44,22 +52,25 @@ func TestGetById(t *testing.T) {
 
 func TestGetByAllUser(t *testing.T) {
 	db, mock, err := sqlmock.New()
+	gormDB, _ := gorm.Open("postgres", db)
+
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
 	rows := sqlmock.NewRows([]string{"id", "name", "email", "updated_at", "created_at"}).
-		AddRow(1, "eco", "eco@example.com", time.Now(), time.Now())
+		AddRow(1, "eco", "eco@example.com", time.Now(), time.Now()).
+		AddRow(2, "eco", "eco@site.com", time.Now(), time.Now())
 
-	query := "select (.+) from users"
+	query := "^SELECT (.+) FROM \"users\""
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
-	ur := NewUserRepo(db)
+	ur := NewUserRepo(gormDB)
 
 	users, err := ur.Users()
 	assert.NoError(t, err)
-	assert.NotNil(t, users)
+	assert.Len(t, users, 2)
 }
 
 func TestCreateUser(t *testing.T) {
@@ -72,18 +83,21 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	db, mock, err := sqlmock.New()
+	gormDB, _ := gorm.Open("postgres", db)
+
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	query := "insert users set name=\\?, email=\\?, created_at=\\?, updated_at=\\?"
+	query := "^INSERT INTO \"users\" (.+) VALUES (.+)"
 	prep := mock.ExpectPrepare(query)
-	prep.ExpectExec().WithArgs(u.Name, u.Email, u.CreatedAt, u.UpdatedAt).WillReturnResult(sqlmock.NewResult(12, 1))
+	prep.ExpectExec().WithArgs(u.Name, u.Email, u.CreatedAt, u.UpdatedAt).WillReturnResult(sqlmock.NewResult(1, 1))
 
-	ur := NewUserRepo(db)
+	ur := NewUserRepo(gormDB)
 
 	user, err := ur.Create(u)
+
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
 }
@@ -98,35 +112,39 @@ func TestUpdate(t *testing.T) {
 	}
 
 	db, mock, err := sqlmock.New()
+	gormDB, _ := gorm.Open("postgres", db)
+
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	query := "update users set name=\\?, email=\\?, updated_at=\\? where id=\\?"
+	query := "^UPDATE \"users\" set name=\\?, updated_at=\\? where id=\\?"
 	prep := mock.ExpectPrepare(query)
-	prep.ExpectExec().WithArgs(u.Name, u.Email, u.UpdatedAt, u.ID).WillReturnResult(sqlmock.NewResult(1, 1))
+	prep.ExpectExec().WithArgs(u.Name, u.UpdatedAt, u.ID).WillReturnResult(sqlmock.NewResult(1, 1))
 
-	ur := NewUserRepo(db)
+	ur := NewUserRepo(gormDB)
 
 	user, err := ur.Update(1, u)
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
+	fmt.Print(user)
 }
 
 func TestDelete(t *testing.T) {
 	db, mock, err := sqlmock.New()
+	gormDB, _ := gorm.Open("postgres", db)
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
-	query := "delete from users where id=\\?"
+	query := "^DELETE FROM \"users\" WHERE (.+)$"
 
 	prep := mock.ExpectPrepare(query)
 	prep.ExpectExec().WithArgs(1).WillReturnResult(sqlmock.NewResult(1, 1))
 
-	ur := NewUserRepo(db)
+	ur := NewUserRepo(gormDB)
 
 	id := int(1)
 	status, err := ur.Delete(id)

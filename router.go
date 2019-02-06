@@ -1,15 +1,14 @@
 package main
 
 import (
-	"database/sql"
-
 	"github.com/ecojuntak/gorb/controllers"
 	"github.com/ecojuntak/gorb/middlewares"
 	"github.com/ecojuntak/gorb/repositories"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 )
 
-func LoadRouter(db *sql.DB) (r *mux.Router) {
+func LoadRouter(db *gorm.DB) (r *mux.Router) {
 	userRepo := repositories.NewUserRepo(db)
 	userController := controllers.NewUserController(userRepo)
 
@@ -21,5 +20,6 @@ func LoadRouter(db *sql.DB) (r *mux.Router) {
 	r.HandleFunc("/users/{id}", userController.Delete).Methods("DELETE")
 
 	r.Use(middlewares.LoggerMidldlware)
+
 	return
 }

@@ -1,13 +1,12 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/ecojuntak/gorb/middlewares"
+	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
 
 	"github.com/gorilla/handlers"
 
@@ -19,8 +18,8 @@ import (
 
 func onError(err error, failedMessage string) {
 	if err != nil {
-		log.Printf("Error : %s", failedMessage)
-		log.Printf("Error : %v", err)
+		logrus.Errorln(failedMessage)
+		logrus.Errorln(err)
 	}
 }
 
@@ -32,11 +31,11 @@ func loadConfig() (err error) {
 	return err
 }
 
-func runServer(db *sql.DB) {
+func runServer(db *gorm.DB) {
 	r := LoadRouter(db)
 	corsOption := middlewares.CorsMiddleware()
 
-	log.Println("Server run on " + getAddress())
+	logrus.Infoln("Server run on " + getAddress())
 
 	http.ListenAndServe(getAddress(), handlers.CORS(corsOption[0], corsOption[1], corsOption[2])(r))
 }
@@ -44,19 +43,20 @@ func runServer(db *sql.DB) {
 func main() {
 	err := loadConfig()
 	if err != nil {
-		log.Fatal(err.Error())
+		logrus.Errorln(err)
 	}
 
 	db, err := database.InitDatabase()
-	err = db.Ping()
+	err = db.DB().Ping()
+
 	if err != nil {
-		log.Fatal(err.Error())
+		logrus.Errorln(err)
 	}
 
 	defer db.Close()
 
 	cliApp := cli.NewApp()
-	cliApp.Name = "GO-REST"
+	cliApp.Name = "GORB"
 	cliApp.Version = "1.0.0"
 
 	cliApp.Commands = []cli.Command{
@@ -64,7 +64,7 @@ func main() {
 			Name:        "migrate",
 			Description: "Run database migration",
 			Action: func(c *cli.Context) error {
-				err = database.Migrate()
+				err = database.Migrate(db)
 				onError(err, "Failed to migrate database schema")
 
 				return err
@@ -76,7 +76,6 @@ func main() {
 			Action: func(c *cli.Context) error {
 				err = database.RunSeeder(db)
 				onError(err, "Failed to generate fake data")
-				fmt.Println("seeding finish")
 
 				return err
 			},
@@ -92,6 +91,6 @@ func main() {
 	}
 
 	if err := cliApp.Run(os.Args); err != nil {
-		log.Fatalln(err)
+		logrus.Fatalln(err)
 	}
 }

@@ -37,12 +37,14 @@ func TestUsers(t *testing.T) {
 }
 
 func TestUser(t *testing.T) {
+	now := time.Now()
+
 	u := models.User{
 		ID:        0,
 		Name:      "eco",
 		Email:     "eco@example.com",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	id := int(u.ID)
@@ -67,11 +69,13 @@ func TestUser(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
+	now := time.Now()
+
 	u := models.User{
 		Name:      "eco",
 		Email:     "eco@example.com",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	tempUser := u
@@ -98,12 +102,14 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
+	now := time.Now()
+
 	u := models.User{
 		ID:        1,
 		Name:      "eco",
 		Email:     "eco@example.com",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	id := int(u.ID)
@@ -130,12 +136,14 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDetele(t *testing.T) {
+	now := time.Now()
+
 	u := models.User{
 		ID:        1,
 		Name:      "eco",
 		Email:     "eco@example.com",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	id := int(u.ID)
