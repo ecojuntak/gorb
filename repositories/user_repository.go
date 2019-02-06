@@ -30,11 +30,11 @@ func (r *userRepo) User(id int) (models.User, error) {
 }
 
 func (r *userRepo) Users() ([]models.User, error) {
-	var users []models.User
+	var uu []models.User
 
-	r.DB.Find(&users)
+	r.DB.Find(&uu)
 
-	return users, nil
+	return uu, nil
 }
 
 func (r *userRepo) Create(u models.User) (models.User, error) {

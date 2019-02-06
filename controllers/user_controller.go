@@ -20,6 +20,26 @@ func NewUserController(repo repositories.UserRepository) UserController {
 	return UserController{repo}
 }
 
+func (c *UserController) Resources(w http.ResponseWriter, r *http.Request) {
+	switch m := r.Method; m {
+	case http.MethodGet:
+		params := mux.Vars(r)
+		if len(params) == 0 {
+			c.Users(w, r)
+		} else {
+			c.User(w, r)
+		}
+	case http.MethodPost:
+		c.Create(w, r)
+	case http.MethodPatch:
+		c.Update(w, r)
+	case http.MethodDelete:
+		c.Delete(w, r)
+	default:
+		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
+	}
+}
+
 func modifyResponse(user models.User) map[string]interface{} {
 	u := make(map[string]interface{})
 	u["id"] = user.ID
