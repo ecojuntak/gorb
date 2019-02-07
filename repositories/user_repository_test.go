@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -44,8 +43,7 @@ func TestGetById(t *testing.T) {
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	ur := NewUserRepo(gormDB)
 
-	user, err := ur.User(1)
-	assert.NoError(t, err)
+	user := ur.User(1)
 	assert.NotNil(t, user)
 	assert.Equal(t, u, user)
 }
@@ -68,8 +66,7 @@ func TestGetByAllUser(t *testing.T) {
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	ur := NewUserRepo(gormDB)
 
-	users, err := ur.Users()
-	assert.NoError(t, err)
+	users := ur.Users()
 	assert.Len(t, users, 2)
 }
 
@@ -96,9 +93,8 @@ func TestCreateUser(t *testing.T) {
 
 	ur := NewUserRepo(gormDB)
 
-	user, err := ur.Create(u)
+	user := ur.Create(u)
 
-	assert.NoError(t, err)
 	assert.NotNil(t, user)
 }
 
@@ -125,10 +121,8 @@ func TestUpdate(t *testing.T) {
 
 	ur := NewUserRepo(gormDB)
 
-	user, err := ur.Update(1, u)
-	assert.NoError(t, err)
+	user := ur.Update(1, u)
 	assert.NotNil(t, user)
-	fmt.Print(user)
 }
 
 func TestDelete(t *testing.T) {
@@ -146,8 +140,7 @@ func TestDelete(t *testing.T) {
 
 	ur := NewUserRepo(gormDB)
 
-	id := int(1)
-	status, err := ur.Delete(id)
-	assert.NoError(t, err)
+	id := 1
+	status := ur.Delete(id)
 	assert.True(t, status)
 }

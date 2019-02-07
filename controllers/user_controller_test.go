@@ -20,7 +20,7 @@ import (
 func TestUsers(t *testing.T) {
 	uu := make([]models.User, 1)
 	mockUserRepo := new(mocks.UserRepository)
-	mockUserRepo.On("Users").Return(uu, nil)
+	mockUserRepo.On("Users").Return(uu)
 
 	uc := controllers.NewUserController(mockUserRepo)
 
@@ -28,7 +28,7 @@ func TestUsers(t *testing.T) {
 	assert.NoError(t, err)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(uc.Users)
+	handler := http.HandlerFunc(uc.Resources)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -37,34 +37,48 @@ func TestUsers(t *testing.T) {
 }
 
 func TestUser(t *testing.T) {
-	now := time.Now()
+	u := models.User{}
 
-	u := models.User{
-		ID:        0,
-		Name:      "eco",
-		Email:     "eco@example.com",
-		CreatedAt: now,
-		UpdatedAt: now,
-	}
-
-	id := int(u.ID)
+	id := 0
 
 	mockUserRepo := new(mocks.UserRepository)
-	mockUserRepo.On("User", id).Return(u, nil)
+	mockUserRepo.On("User", id).Return(u)
 
 	uc := controllers.NewUserController(mockUserRepo)
 
-	req, err := http.NewRequest("GET", "/user/"+strconv.Itoa(id), nil)
-	if err != nil {
-		t.Fatalf(err.Error())
-	}
+	req, err := http.NewRequest("GET", "/users/"+strconv.Itoa(id), nil)
+	assert.NoError(t, err)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(uc.User)
-	handler.ServeHTTP(rr, req)
+	router := mux.NewRouter()
+	router.HandleFunc("/users/{id}", uc.Resources)
+	router.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+}
+
+func TestUserShouldFailed(t *testing.T) {
+	u := models.User{}
+
+	id := 0
+
+	mockUserRepo := new(mocks.UserRepository)
+	mockUserRepo.On("User", id).Return(u)
+
+	uc := controllers.NewUserController(mockUserRepo)
+
+	req, err := http.NewRequest("GET", "/users/"+strconv.Itoa(id), nil)
+	assert.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	router := mux.NewRouter()
+	router.HandleFunc("/users/{name}", uc.Resources)
+	router.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusInternalServerError)
 	}
 }
 
@@ -82,7 +96,7 @@ func TestCreate(t *testing.T) {
 	tempUser.ID = 1
 
 	mockUserRepo := new(mocks.UserRepository)
-	mockUserRepo.On("Create", mock.AnythingOfType("models.User")).Return(u, nil)
+	mockUserRepo.On("Create", mock.AnythingOfType("models.User")).Return(u)
 
 	uc := controllers.NewUserController(mockUserRepo)
 
@@ -93,8 +107,9 @@ func TestCreate(t *testing.T) {
 	assert.NoError(t, err)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(uc.Create)
-	handler.ServeHTTP(rr, req)
+	router := mux.NewRouter()
+	router.HandleFunc("/users", uc.Resources)
+	router.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusCreated {
 		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusCreated)
@@ -115,7 +130,7 @@ func TestUpdate(t *testing.T) {
 	id := int(u.ID)
 
 	mockUserRepo := new(mocks.UserRepository)
-	mockUserRepo.On("Update", id, mock.AnythingOfType("models.User")).Return(u, nil)
+	mockUserRepo.On("Update", id, mock.AnythingOfType("models.User")).Return(u)
 
 	uc := controllers.NewUserController(mockUserRepo)
 
@@ -127,15 +142,15 @@ func TestUpdate(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	router := mux.NewRouter()
-	router.HandleFunc("/users/{id}", uc.Update)
+	router.HandleFunc("/users/{id}", uc.Resources)
 	router.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusCreated)
+		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 }
 
-func TestDetele(t *testing.T) {
+func TestUpdateShouldFailed(t *testing.T) {
 	now := time.Now()
 
 	u := models.User{
@@ -149,7 +164,31 @@ func TestDetele(t *testing.T) {
 	id := int(u.ID)
 
 	mockUserRepo := new(mocks.UserRepository)
-	mockUserRepo.On("Delete", id).Return(true, nil)
+	mockUserRepo.On("Update", id, mock.AnythingOfType("models.User")).Return(u)
+
+	uc := controllers.NewUserController(mockUserRepo)
+
+	payload, err := json.Marshal(u)
+	assert.NoError(t, err)
+
+	req, err := http.NewRequest("PATCH", "/users/"+strconv.Itoa(id), strings.NewReader(string(payload)))
+	assert.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	router := mux.NewRouter()
+	router.HandleFunc("/users/{name}", uc.Resources)
+	router.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusInternalServerError)
+	}
+}
+
+func TestDetele(t *testing.T) {
+	id := 1
+
+	mockUserRepo := new(mocks.UserRepository)
+	mockUserRepo.On("Delete", id).Return(true)
 
 	uc := controllers.NewUserController(mockUserRepo)
 
@@ -158,10 +197,54 @@ func TestDetele(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	router := mux.NewRouter()
-	router.HandleFunc("/users/{id}", uc.Delete)
+	router.HandleFunc("/users/{id}", uc.Resources)
 	router.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusCreated)
+		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+}
+
+func TestDeteleShouldFailed(t *testing.T) {
+	id := 1
+
+	mockUserRepo := new(mocks.UserRepository)
+	mockUserRepo.On("Delete", id).Return(true)
+
+	uc := controllers.NewUserController(mockUserRepo)
+
+	req, err := http.NewRequest("DELETE", "/users/"+strconv.Itoa(id), nil)
+	assert.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	router := mux.NewRouter()
+	router.HandleFunc("/users/{name}", uc.Resources)
+	router.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusInternalServerError)
+	}
+}
+
+func TestMethodNotAllows(t *testing.T) {
+	id := 1
+
+	msg := map[string]string{"error": "Method not allowed"}
+
+	mockUserRepo := new(mocks.UserRepository)
+	mockUserRepo.On("Delete", id).Return(msg)
+
+	uc := controllers.NewUserController(mockUserRepo)
+
+	req, err := http.NewRequest("OPTION", "/users/"+strconv.Itoa(id), nil)
+	assert.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	router := mux.NewRouter()
+	router.HandleFunc("/users/{id}", uc.Resources)
+	router.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusMethodNotAllowed {
+		t.Errorf("Controller returned wrong status code: got %v want %v", status, http.StatusMethodNotAllowed)
 	}
 }

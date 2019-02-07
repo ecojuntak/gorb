@@ -21,13 +21,9 @@ func RunSeeder(db *gorm.DB) (err error) {
 			logrus.Fatalln(err)
 		}
 
-		u, err := userRepo.Create(user)
+		u := userRepo.Create(user)
 
-		if err != nil {
-			logrus.Fatalln(err)
-		} else {
-			logrus.Println(u)
-		}
+		logrus.Println(u)
 	}
 
 	return nil

@@ -11,7 +11,7 @@ type UserRepository struct {
 }
 
 // Create provides a mock function with given fields: u
-func (_m *UserRepository) Create(u models.User) (models.User, error) {
+func (_m *UserRepository) Create(u models.User) models.User {
 	ret := _m.Called(u)
 
 	var r0 models.User
@@ -21,18 +21,11 @@ func (_m *UserRepository) Create(u models.User) (models.User, error) {
 		r0 = ret.Get(0).(models.User)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(models.User) error); ok {
-		r1 = rf(u)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // Delete provides a mock function with given fields: id
-func (_m *UserRepository) Delete(id int) (bool, error) {
+func (_m *UserRepository) Delete(id int) bool {
 	ret := _m.Called(id)
 
 	var r0 bool
@@ -42,18 +35,11 @@ func (_m *UserRepository) Delete(id int) (bool, error) {
 		r0 = ret.Get(0).(bool)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(id)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // Update provides a mock function with given fields: id, u
-func (_m *UserRepository) Update(id int, u models.User) (models.User, error) {
+func (_m *UserRepository) Update(id int, u models.User) models.User {
 	ret := _m.Called(id, u)
 
 	var r0 models.User
@@ -63,18 +49,11 @@ func (_m *UserRepository) Update(id int, u models.User) (models.User, error) {
 		r0 = ret.Get(0).(models.User)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int, models.User) error); ok {
-		r1 = rf(id, u)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // User provides a mock function with given fields: id
-func (_m *UserRepository) User(id int) (models.User, error) {
+func (_m *UserRepository) User(id int) models.User {
 	ret := _m.Called(id)
 
 	var r0 models.User
@@ -84,18 +63,11 @@ func (_m *UserRepository) User(id int) (models.User, error) {
 		r0 = ret.Get(0).(models.User)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(id)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // Users provides a mock function with given fields:
-func (_m *UserRepository) Users() ([]models.User, error) {
+func (_m *UserRepository) Users() []models.User {
 	ret := _m.Called()
 
 	var r0 []models.User
@@ -107,12 +79,5 @@ func (_m *UserRepository) Users() ([]models.User, error) {
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }

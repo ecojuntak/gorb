@@ -40,30 +40,13 @@ func (c *UserController) Resources(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func modifyResponse(user models.User) map[string]interface{} {
-	u := make(map[string]interface{})
-	u["id"] = user.ID
-	u["name"] = user.Name
-	u["email"] = user.Email
-	u["created_at"] = user.CreatedAt
-	u["updated_at"] = user.UpdatedAt
-	u["deteled_at"] = user.DeletedAt
-
-	return u
-}
-
 func (c *UserController) Users(w http.ResponseWriter, r *http.Request) {
-	users, err := c.repo.Users()
+	users := c.repo.Users()
 
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	var uu []map[string]interface{}
+	var uu []models.User
 
 	for _, user := range users {
-		uu = append(uu, modifyResponse(user))
+		uu = append(uu, user)
 	}
 
 	respondWithJSON(w, http.StatusOK, uu)
@@ -72,15 +55,13 @@ func (c *UserController) Users(w http.ResponseWriter, r *http.Request) {
 func (c *UserController) User(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
-	id, _ := strconv.Atoi(params["id"])
-	user, err := c.repo.User(id)
-
+	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	u := modifyResponse(user)
+	u := c.repo.User(id)
 
 	respondWithJSON(w, http.StatusOK, u)
 }
@@ -95,13 +76,7 @@ func (c *UserController) Create(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt: now,
 	}
 
-	res, err := c.repo.Create(u)
-	user := modifyResponse(res)
-
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	user := c.repo.Create(u)
 
 	respondWithJSON(w, http.StatusCreated, user)
 }
@@ -122,13 +97,7 @@ func (c *UserController) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := c.repo.Update(id, u)
-	user := modifyResponse(res)
-
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	user := c.repo.Update(id, u)
 
 	respondWithJSON(w, http.StatusOK, user)
 }
@@ -141,12 +110,7 @@ func (c *UserController) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := c.repo.Delete(id)
-
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	ok := c.repo.Delete(id)
 
 	if ok {
 		respondWithJSON(w, http.StatusOK, true)
