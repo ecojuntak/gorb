@@ -61,6 +61,11 @@ To run the seeder
 ```
 go run *.go seed
 ```
+## Start the test
+To start the server
+```
+go test ./...
+```
 ## Start the server
 To start the server
 ```
